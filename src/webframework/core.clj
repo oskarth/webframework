@@ -4,8 +4,6 @@
 (defn error [] {:status 404 :body "Unknown."})
 (defn ok [body] {:status 200 :headers {"Content-Type" "text/html"} :body body})
 
-(defn log [req] (prn (:request-method req) (:uri req)))
-
 (defn get-file
   "Safe acces to file."
   [file]
@@ -25,10 +23,10 @@
 (def routes
   {"/helloworld" (ok (helloworld))})
 
-(defn handler [request]
-  (log request)
-  (if (contains? routes (:uri request))
-    (get routes (:uri request))
-    (file-response (:uri request))))
+(defn handler [{:keys [uri request-method] :as request}]
+  (prn uri request-method)
+  (if (contains? routes uri)
+    (get routes uri)
+    (file-response uri)))
 
 (defn helloworld [] "<h1> Hello Funtion </h1>")
