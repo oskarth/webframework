@@ -31,7 +31,7 @@
       ((get-in routes [request-method resource]) arg params)
       (file-response uri))))
 
-(def app (wrap-params handler)) ;; cheating with middleware
+(def app (wrap-params handler))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; example app
