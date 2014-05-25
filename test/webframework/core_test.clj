@@ -10,5 +10,11 @@
     (is (:status (handler {:uri "foo/bar.html"}) 200)))
   
    (testing "secure directiory traversal"
-    (is (:status (handler {:uri "/../project.clj"})) 404)))
+     (is (:status (handler {:uri "/../project.clj"})) 404))
+
+   (testing "user found"
+     (is (:status (handler {:uri "/users/meep"})) 200))
+   
+   (testing "users not found"
+    (is (:status (handler {:uri "/users/ghost"})) 404)))
 

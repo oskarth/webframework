@@ -1,7 +1,8 @@
 (ns webframework.core
-  (require [ring.adapter.jetty :refer [run-jetty]]))
+  (require [clojure.string :refer [split]]
+           [ring.adapter.jetty :refer [run-jetty]]))
 
-(defn error [] {:status 404 :body "Unknown."})
+(defn error [& [msg]] {:status 404 :body (or msg "Unknown.")})
 (defn ok [body] {:status 200 :headers {"Content-Type" "text/html"} :body body})
 
 (defn get-file
@@ -20,13 +21,23 @@
       (catch Exception e
         (error)))))
 
+
+(defn handle-user [id]
+  (cond (= id "meep") (ok "<h1>Meep!</h1>")
+        :else (error "No such user.")))
+
 (def routes
-  {"/helloworld" (ok (helloworld))})
+  "Put your routes in here, implicit / because of bad regex-fu."
+  {"helloworld" (fn [_] (ok (helloworld)))
+   "users" (fn [a] (handle-user a))})
 
 (defn handler [{:keys [uri request-method] :as request}]
-  (prn uri request-method)
-  (if (contains? routes uri)
-    (get routes uri)
-    (file-response uri)))
+  (let [[_ resource arg] (split uri #"/")]
+    (prn request-method resource arg)
+    (if (contains? routes resource)
+      ((get routes resource) arg)
+      (file-response uri))))
 
-(defn helloworld [] "<h1> Hello Funtion </h1>")
+(defn helloworld [] "<h1> Hello Function </h1>")
+
+
