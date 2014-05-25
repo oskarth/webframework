@@ -1,14 +1,11 @@
 # webframework
 
-A Clojure library designed to ... well, that part is up to you.
+Goal: Make a web framework in under 4 hours and under 100 lines of code.
 
-## Usage
+`lein ring server` to run.
 
-FIXME
+# TODO
 
-## License
-
-Copyright © 2014 FIXME
-
-Distributed under the Eclipse Public License either version 1.0 or (at
-your option) any later version.
+- remove middleware for wrap-params
+- use own server instead of ring-adapter-jetty
+- think about routing format
