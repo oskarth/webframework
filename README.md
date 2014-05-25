@@ -27,4 +27,5 @@ directory. Not a whole lot of documentation.
 
 - remove middleware for wrap-params
 - use own server instead of ring-adapter-jetty
-- think about routing format
+- think about routing format (separation of concerns etc)
+- modularize it
