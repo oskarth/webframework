@@ -3,6 +3,12 @@
             [webframework.core :refer :all]))
 
 (deftest a-test
-   (testing "secure directiory traversal."
-    (is (:status (handler {:uri "/../project.clj"})) 400)))
+  (testing "index page"
+    (is (:status (handler {:uri "/"}) 200)))
+
+  (testing "directory traversal"
+    (is (:status (handler {:uri "foo/bar.html"}) 200)))
+  
+   (testing "secure directiory traversal"
+    (is (:status (handler {:uri "/../project.clj"})) 404)))
 
