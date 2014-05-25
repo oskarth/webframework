@@ -26,12 +26,12 @@
 
 (defn handler [{:keys [uri request-method params] :as request}]
   (let [[_ resource arg] (split uri #"/")]
-    ;;(prn request-method resource arg params)
+    (prn request-method resource arg params) ;; debugging
     (if (get-in routes [request-method resource])
       ((get-in routes [request-method resource]) arg params)
       (file-response uri))))
 
-(def app (wrap-params handler))
+(def app (wrap-params handler)) ;; cheating with middleware
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; example app
@@ -55,6 +55,6 @@
   "Put your routes in here, implicit / because of bad regex-fu."
   {:get
    {"helloworld" (fn [_ _] (ok (helloworld)))
-    "users" (fn [a _] (view-user a))}
+    "users" (fn [id _] (view-user id))}
    :post
-   {"users" (fn [a params] (add-user params))}})
+   {"users" (fn [_ params] (add-user params))}})

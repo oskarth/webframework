@@ -16,5 +16,5 @@
      (is (:status (handler {:uri "/users/meep"})) 200))
    
    (testing "users not found"
-    (is (:status (handler {:uri "/users/ghost"})) 404)))
+     (is (:status (handler {:uri "/users/ghost"})) 404)))
 
