@@ -1,43 +1,60 @@
 (ns webframework.core
   (require [clojure.string :refer [split]]
-           [ring.adapter.jetty :refer [run-jetty]]))
+           [ring.adapter.jetty :refer [run-jetty]]
+           [ring.middleware.params :refer [wrap-params]]))
 
+;; Every dependency is one cheat point.
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; framework questionmark
+
+(def routes {})
 (defn error [& [msg]] {:status 404 :body (or msg "Unknown.")})
 (defn ok [body] {:status 200 :headers {"Content-Type" "text/html"} :body body})
 
-(defn get-file
-  "Safe acces to file."
-  [file]
+(defn get-file [file]
   (if (re-find #"\.\." file)
     (throw (Exception. "access denied"))
     (slurp file)))
 
-(defn file-response
-  "Serves a file if it exists."
-  [uri]
+(defn file-response [uri]
   (let [newuri (if (= uri "/") "/index.html" uri)]
     (try
       (ok (get-file (str "resources" newuri)))
       (catch Exception e
         (error)))))
 
+(defn handler [{:keys [uri request-method params] :as request}]
+  (let [[_ resource arg] (split uri #"/")]
+    ;;(prn request-method resource arg params)
+    (if (get-in routes [request-method resource])
+      ((get-in routes [request-method resource]) arg params)
+      (file-response uri))))
 
-(defn handle-user [id]
-  (cond (= id "meep") (ok "<h1>Meep!</h1>")
+(def app (wrap-params handler))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; example app
+
+(def users (atom {}))
+(swap! users conj {"meep" (rand-int 1000)})
+
+(defn view-user [id]
+  (cond (= id nil) (ok (get-file "resources/add-user.html"))
+        (contains? @users id) (ok (str "<h1>" id " (" (get @users id) ")</h1>"))
         :else (error "No such user.")))
 
-(def routes
-  "Put your routes in here, implicit / because of bad regex-fu."
-  {"helloworld" (fn [_] (ok (helloworld)))
-   "users" (fn [a] (handle-user a))})
-
-(defn handler [{:keys [uri request-method] :as request}]
-  (let [[_ resource arg] (split uri #"/")]
-    (prn request-method resource arg)
-    (if (contains? routes resource)
-      ((get routes resource) arg)
-      (file-response uri))))
+(defn add-user [params]
+  (let [name (get params "name")]
+    (do (swap! users conj {name (rand-int 1000)})
+        (ok (str "Added " name)))))
 
 (defn helloworld [] "<h1> Hello Function </h1>")
 
-
+(def routes
+  "Put your routes in here, implicit / because of bad regex-fu."
+  {:get
+   {"helloworld" (fn [_ _] (ok (helloworld)))
+    "users" (fn [a _] (view-user a))}
+   :post
+   {"users" (fn [a params] (add-user params))}})
