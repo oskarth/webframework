@@ -1,9 +1,24 @@
 (ns webframework.core
   (require [ring.adapter.jetty :refer [run-jetty]]))
 
-(defn handler [request]
+(defn error [] {:status 404 :body "404"})
+
+(defn ok [body]
   {:status 200
    :headers {"Content-Type" "text/html"}
-   :body "Hello world!"})
+   :body body})
 
-(run-jetty handler {:port 3000})
+(defn get-page
+  "Returns content of page or nil."
+  [page]
+  (try
+    (slurp (str "resources" page))
+    (catch Exception e
+      (if (= page "/") (get-page "/index.html")
+          nil))))
+
+(defn handler [request]
+  (prn "REQ uri: " (:uri request))
+  (if-let [body (get-page (:uri request))]
+    (ok body)
+    (error)))
