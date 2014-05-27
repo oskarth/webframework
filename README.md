@@ -4,12 +4,16 @@ Goal: Make a web framework in under 4 hours and under 100 lines of code.
 
 Requires `leiningen` (www.leiningen.org) on your computer.
 
-`lein ring server` to run. Some urls to go to:
+`lein run` to run a server on port 3000 (or `lein ring server` if you have `lein-ring` installed). Some urls to go to:
 
 `http://localhost:3000/foo/bar.html`
+
 `http://localhost:3000/../project.clj`
+
 `http://localhost:3000/users/meep`
+
 `http://localhost:3000/users/ghost`
+
 `http://localhost:3000/users/` post a user then go to that url.
 
 All the code is in `src/webframework/core.clj`. Some tests in the `test`

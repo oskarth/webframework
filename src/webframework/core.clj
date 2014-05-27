@@ -33,6 +33,9 @@
 
 (def app (wrap-params handler))
 
+(defn -main []
+  (run-jetty app {:port 3000}))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; example app
 
